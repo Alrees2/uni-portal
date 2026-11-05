@@ -1,6 +1,8 @@
 (function(root){
   'use strict';
-  function normalize(value){return String(value).normalize('NFKC').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[^\p{L}\p{N}]/gu,'').toLowerCase();}
-  function findStudents(students,query,department){const key=normalize(query);if(key.length<3)return[];return students.filter(s=>(!department||s.department===department)&&normalize(s.name).includes(key)).sort((a,b)=>Number(normalize(b.name)===key)-Number(normalize(a.name)===key)||a.id-b.id);}
-  const api={normalize,findStudents};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AdmissionSearch=api;
+  const map={'أ':'ا','إ':'ا','آ':'ا','ٱ':'ا','ى':'ي','ی':'ي','ې':'ي','ێ':'ي','ئ':'ي','ؤ':'و','ۆ':'و','ۇ':'و','ة':'ه','ە':'ه','ہ':'ه','ھ':'ه','ک':'ك','ڵ':'ل','ڕ':'ر','ء':''};
+  function normalize(value){return String(value??'').normalize('NFKC').replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g,'').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآٱىیېێئؤۆۇةەہھکڵڕء]/g,c=>map[c]).replace(/[^\p{L}\s]/gu,' ').replace(/\s+/g,' ').trim().toLowerCase();}
+  function prepareStudents(rows){return rows.map(r=>{const norm=normalize(r.name);return {...r,norm,key:norm.replace(/ /g,'')};});}
+  function findStudents(rows,query,department=''){const norm=normalize(query),tokens=norm.split(' ').filter(Boolean),key=tokens.join('');if(key.length<2)return[];const hits=[];for(const r of rows){if(department&&r.department!==department)continue;let pos=0;const starts=new Set(r.norm.split(' ').map(w=>{const start=pos;pos+=w.length;return start;}));const joinedMatch=t=>{for(let i=r.key.indexOf(t);i!==-1;i=r.key.indexOf(t,i+1)){if(starts.has(i))return true;}return false;};if(!r.key.includes(key)&&!tokens.every(t=>r.norm.includes(t)||(t.length>=4&&joinedMatch(t))))continue;const rank=r.key===key?0:r.key.startsWith(key)?1:tokens.length&&r.norm.split(' ').some(w=>w.startsWith(tokens[0]))?2:3;hits.push({student:r,rank});}return hits.sort((a,b)=>a.rank-b.rank||a.student.id-b.student.id).map(x=>x.student);}
+  const api={normalize,prepareStudents,findStudents};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AdmissionSearch=api;
 })(typeof window!=='undefined'?window:globalThis);
