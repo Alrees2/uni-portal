@@ -77,3 +77,12 @@
   .student-name{font-size:23px}
   .department-name{font-size:21px}
 }
+
+.admission-notes{margin-top:17px;padding:16px 18px;border:1px solid #ebdfc8;border-radius:12px;background:#fcf8f0;color:#51677c}
+.admission-notes h4{margin:0;font:600 14px/1.9 var(--display);color:#89652e}
+.admission-notes ul{margin:8px 0 0;padding-inline-start:20px}
+.admission-notes li{font-size:14px;line-height:1.95;padding-inline-start:3px}
+.admission-notes li+li{margin-top:9px}
+@media screen{.credit>span{font-size:12px}.credit>strong{font-size:15px;font-weight:600}}
+@media screen and (max-width:600px){.credit>span{font-size:14px}.credit>strong{font-size:17px;line-height:1.95}.admission-notes{padding:15px}.admission-notes h4{font-size:17px}.admission-notes li{font-size:16px;line-height:1.95}}
+@media print{.admission-notes{background:white;border-color:#d0d7e0;color:#102b46;break-inside:avoid}.admission-notes h4{color:#003868}}
