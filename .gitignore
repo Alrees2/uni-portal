@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.openai/
+.wrangler/
+.DS_Store
